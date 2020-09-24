@@ -1,0 +1,72 @@
+---
+alertmanager:
+  # Alertmanager configuration.
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'nall'
+      routes:
+        - match:
+            alertname: Watchdog
+          receiver: 'nall'
+    receivers:
+      - name: 'nall'
+
+  # Alertmanager template files.
+  templateFiles:
+    alertmanager.tpl: |-
+      foo bar baz
+
+## IGNORE CONFIG BELOW
+#
+# We are going to disable a couple of thing for this demo because we do not
+# need them.
+global:
+  rbac:
+    pspEnabled: false
+kubelet:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+coreDns:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+nodeExporter:
+  enabled: false
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: false
+    general: false
+    k8s: true
+    kubeApiserver: false
+    kubeApiserverAvailability: false
+    kubeApiserverError: false
+    kubeApiserverSlos: false
+    kubelet: false
+    kubePrometheusGeneral: true
+    kubePrometheusNodeAlerting: false
+    kubePrometheusNodeRecording: false
+    kubernetesAbsent: true
+    kubernetesApps: true
+    kubernetesResources: false
+    kubernetesStorage: false
+    kubernetesSystem: false
+    kubeScheduler: false
+    kubeStateMetrics: false
+    network: false
+    node: true
+    prometheus: true
+    prometheusOperator: true
+    time: false
