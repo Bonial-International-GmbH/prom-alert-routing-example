@@ -24,7 +24,8 @@ alertmanager:
     # demo. The relevant configuration parts are commented.
     global:
       resolve_timeout: 5m
-      # Put a valid victorops API key in here.
+      # Replaced by helm with the key from the VICTOROPS_API_KEY env
+      # variable.
       victorops_api_key: REPLACEME
     receivers:
       - name: dev-null

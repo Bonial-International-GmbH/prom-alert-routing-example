@@ -2,6 +2,7 @@
 
 NAMESPACE ?= par-demo
 NAME ?= $(NAMESPACE)
+VICTOROPS_API_KEY ?= REPLACEME
 
 .PHONY: help deploy helm-repo
 help:
@@ -15,12 +16,14 @@ helm-repo: ## add helm repos
 	helm repo update
 
 deploy: ## deploy the demo
-	helm upgrade $(NAME) prometheus-community/kube-prometheus-stack \
-		--namespace $(NAMESPACE) --values deploy/values.yaml --install
+	@helm upgrade $(NAME) prometheus-community/kube-prometheus-stack \
+		--namespace $(NAMESPACE) --values deploy/values.yaml --install \
+		--set alertmanager.config.global.victorops_api_key="$(VICTOROPS_API_KEY)"
 
 template: ## render manifest for debugging
 	@helm template $(NAME) prometheus-community/kube-prometheus-stack \
-		--namespace $(NAMESPACE) --values deploy/values.yaml
+		--namespace $(NAMESPACE) --values deploy/values.yaml \
+		--set alertmanager.config.global.victorops_api_key="$(VICTOROPS_API_KEY)"
 
 clean: ## remove the demo resources
 	helm uninstall $(NAME) --namespace $(NAMESPACE)
