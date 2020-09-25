@@ -1,26 +1,72 @@
 ---
+additionalPrometheusRulesMap:
+  example-rules:
+    groups:
+      - name: example.rules
+        rules:
+          - alert: FireOnTeamLabel
+            annotations:
+              description: |
+                The pod {{$labels.pod}} has label team={{$labels.team}}
+              summary: Pod has a team label
+            expr: |
+              kube_pod_labels{label_team!=""} > 0
+            for: 1m
+            labels:
+              severity: warning
+
 alertmanager:
   # Alertmanager configuration.
   config:
+    # Below begins the "raw" alertmanager config as you would put it into
+    # alertmanager.yaml. This is more or less the default configuration that
+    # comes with kube-prometheus-operator but with some adjustments for the
+    # demo. The relevant configuration parts are commented.
     global:
       resolve_timeout: 5m
+      # Put a valid victorops API key in here.
+      victorops_api_key: REPLACEME
+    receivers:
+      - name: dev-null
+      - name: victorops
+        victorops_configs:
+          # This is the core idea: instead of using a hardcoded routing key,
+          # make it dynamic by using a template which is evaluated for each
+          # alert.
+          - routing_key: '{{ template "victorops.routing_key" . }}'
     route:
-      group_by: ['job']
+      # Alerts are grouped by team so that we can extract it
+      # from the common alert labels to build the victorops
+      # routing key.
+      group_by:
+        - alertname
+        - job
+        - team
+        - label_team
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 12h
-      receiver: 'nall'
-      routes:
-        - match:
-            alertname: Watchdog
-          receiver: 'nall'
-    receivers:
-      - name: 'nall'
+      receiver: victorops
+      # receiver: dev-null
+      routes: []
 
   # Alertmanager template files.
   templateFiles:
+    # The victorops.routing_key template will build the routing key based on
+    # the presence of the team label and falls back to a "catchall" routing key
+    # in situations where there is no team label sent.
     alertmanager.tpl: |-
-      foo bar baz
+      {{ define "victorops.routing_key" -}}
+      {{- if .CommonLabels.team -}}
+      {{- .CommonLabels.team -}}
+      {{- else -}}
+      {{- if .CommonLabels.label_team -}}
+      {{- .CommonLabels.label_team -}}
+      {{- else -}}
+      catchall
+      {{- end -}}
+      {{- end -}}
+      {{- end }}
 
 ## IGNORE CONFIG BELOW
 #
