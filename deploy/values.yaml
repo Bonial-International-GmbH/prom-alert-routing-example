@@ -4,6 +4,8 @@ additionalPrometheusRulesMap:
     groups:
       - name: example.rules
         rules:
+          # This alerting rule is relatively stupid and was only created for
+          # demoing. It just fires once the "team" label is added to any pod.
           - alert: FireOnTeamLabel
             annotations:
               description: |
@@ -11,7 +13,7 @@ additionalPrometheusRulesMap:
               summary: Pod has a team label
             expr: |
               kube_pod_labels{label_team!=""} > 0
-            for: 30s
+            for: 10s
             labels:
               via: victorops
 
