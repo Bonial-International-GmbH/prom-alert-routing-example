@@ -4,7 +4,8 @@ NAMESPACE ?= par-demo
 NAME ?= $(NAMESPACE)
 VICTOROPS_API_KEY ?= REPLACEME
 
-.PHONY: help deploy helm-repo
+.PHONY: help deploy template clean prometheus-port-forward alertmanager-port-forward helm-repo
+
 help:
 	@grep -E '^[a-zA-Z0-9-]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "[32m%-23s[0m %s\n", $$1, $$2}'
 

@@ -11,9 +11,9 @@ additionalPrometheusRulesMap:
               summary: Pod has a team label
             expr: |
               kube_pod_labels{label_team!=""} > 0
-            for: 1m
+            for: 30s
             labels:
-              severity: warning
+              via: victorops
 
 alertmanager:
   # Alertmanager configuration.
@@ -47,9 +47,13 @@ alertmanager:
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 12h
-      receiver: victorops
-      # receiver: dev-null
-      routes: []
+      receiver: dev-null
+      routes:
+        # We are just sending alerts to victorops that are labeled with
+        # via=victorops. Don't want the demo to spam.
+        - match:
+            via: victorops
+          receiver: victorops
 
   # Alertmanager template files.
   templateFiles:
