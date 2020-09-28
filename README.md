@@ -31,6 +31,7 @@ $ kubectl create namespace par-demo
 Export VictorOps API key and deploy prometheus-operator:
 
 ```bash
+$ export VICTOROPS_API_KEY="<your-victorops-api-key>"
 $ make deploy
 ```
 
