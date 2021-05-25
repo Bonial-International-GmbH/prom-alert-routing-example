@@ -3,6 +3,8 @@
 Example for routing Prometheus alerts to different receivers in multi-tenant
 Kubernetes clusters using Alertmanager and VictorOps.
 
+Read more about it in our [tech-blog](https://www.bonial.com/tech-blog/routing-prometheus-alerts-in-multi-tenant-kubernetes-clusters/).
+
 ## Prerequisites
 
 The demo makes a couple of assumptions which need to be fulfilled before
